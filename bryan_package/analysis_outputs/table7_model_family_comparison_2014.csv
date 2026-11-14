@@ -1,0 +1,7 @@
+Method,Features_Per_Target,Best_Hyperparameters,Val_2014_MAPE_pct,Val_2014_MAE_MW,Relative_Improvement_vs_B1_pct
+Baseline 1: Same half-hour yesterday,1,lag=1 day,4.934955172705048,394.4223738584475,0.0
+Baseline 2: Same half-hour last week,1,lag=7 days,4.9339058465640555,401.2560936073059,0.02126313419817949
+Flat Daily Multi-Output Ridge (L2),403,alpha=1.0,1.923666409927377,154.65132894155605,61.01957682276296
+Per-Slot Ridge (L2) (Selected k=65),65,alpha=5.0,1.7491181086127978,141.46159316862224,64.55655527962911
+Per-Slot ElasticNet (L1+L2) (Selected k=65),65,"alpha=0.005, l1_ratio=0.5",1.7489182262638125,141.47341387633062,64.56060561731182
+Per-Slot Lasso (L1) (Selected k=65),65,alpha=1.0,1.7407953561661096,140.89741214376903,64.72520427755153
