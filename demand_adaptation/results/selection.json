@@ -1,0 +1,14 @@
+{
+  "selected_strategy": "scheduled",
+  "train_start": "2022-11-01",
+  "train_end": "2026-10-31",
+  "reference_transformer_through": 2014,
+  "refit_window_years": 4,
+  "max_refits_per_strategy": 6,
+  "alarm_source": "reference demand error alarm",
+  "validation_2014_mape_pct": 1.7407953561661094,
+  "alarm_window_days": 28,
+  "alarm_quantile": 0.95,
+  "alarm_cooldown_days": 365,
+  "alarm_threshold_pct": 2.173742719898926
+}
