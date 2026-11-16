@@ -1,0 +1,13 @@
+{
+  "n_days": 4322,
+  "input_high_days": 3742,
+  "error_high_days": 3530,
+  "both_high_days": 3342,
+  "input_only_days": 400,
+  "error_only_days": 188,
+  "neither_high_days": 392,
+  "input_alarms": 12,
+  "error_alarms": 12,
+  "input_threshold_ratio": 1.231895739957549,
+  "error_threshold_mape_pct": 2.173742719898926
+}

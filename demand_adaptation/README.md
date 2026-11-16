@@ -38,6 +38,8 @@ python -m demand_adaptation.run data/nem_weather_halfhourly_2010_2026.csv --alar
 
 This run writes to `results_external/` so the reference comparison stays available.
 
+Use `--profile-drift` to run both the input-profile and demand-error detectors and compare their retraining policies on the same dates. The [demand drift experiment](../demand_drift/README.md) includes the alarm timeline, methods and results.
+
 ## Final demand candidate
 
 The exporter chooses the lowest overall simulation MAPE among the three Lasso strategies, breaking ties by MAE and then the number of replacements. The historical scores describe the data used to make that choice. For the selected scheduled strategy, the final model uses demand targets from 1 November 2022 through 31 October 2026. This deployment fit is separate from the six replacements in the historical simulation.

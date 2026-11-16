@@ -1,0 +1,7 @@
+strategy,model,n_half_hours,mape_pct,mae_mw,retrains
+frozen,Frozen Lasso,207456,5.161852619722327,357.4571362323568,0
+scheduled,Scheduled Lasso,207456,2.982639034111687,222.0323709366641,6
+triggered,Error-triggered Lasso,207456,4.146158073576784,288.91096991525313,6
+yesterday,Same half-hour yesterday,207456,6.150098850734843,470.6383317426346,0
+last_week,Same half-hour last week,207456,7.421733680946628,569.7349124633657,0
+input_triggered,Input-triggered Lasso,207456,3.9323559077817327,276.0391179402402,6

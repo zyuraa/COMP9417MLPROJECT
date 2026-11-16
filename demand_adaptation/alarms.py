@@ -7,52 +7,57 @@ import numpy as np
 import pandas as pd
 
 
-class ErrorAlarm:
-    """Monitor trailing daily MAPE against a threshold calibrated on 2014.
+class RollingUpperAlarm:
+    """Signal when a trailing daily mean exceeds its fixed 2014 reference quantile."""
 
-    Calibration errors must come from forecasts of 2014 made by the model
-    trained through 2013. Each call to observe() receives just one newly
-    observed market day and the error of the model deployed for that day.
-    """
-
-    def __init__(self, calibration_daily_mape, window=28, quantile=0.95, cooldown_days=365):
+    def __init__(self, calibration, window=28, quantile=0.95, cooldown_days=365):
         if window < 1 or not 0 < quantile < 1 or cooldown_days < 1:
             raise ValueError("Expected a positive window and cooldown and a quantile between 0 and 1.")
-        dates = pd.DatetimeIndex(calibration_daily_mape.index)
+        dates = pd.DatetimeIndex(calibration.index)
         if len(dates) < window or dates.tz is not None or not (dates.year == 2014).all():
-            raise ValueError("Use a chronological 2014 series of daily validation MAPE to calibrate the alarm.")
+            raise ValueError("Use a chronological 2014 series of daily values to calibrate the alarm.")
         expected = pd.date_range(dates[0].normalize(), periods=len(dates), freq="D")
         if not (dates == expected).all():
             raise ValueError("Calibration needs one value per consecutive market day, in date order.")
-        errors = calibration_daily_mape.to_numpy(dtype=float)
-        if not (np.isfinite(errors) & (errors >= 0)).all():
-            raise ValueError("Calibration MAPE must be finite and nonnegative.")
+        values = calibration.to_numpy(dtype=float)
+        if not (np.isfinite(values) & (values >= 0)).all():
+            raise ValueError("Calibration values must be finite and nonnegative.")
 
         self.window = window
         self.quantile = quantile
         self.cooldown_days = cooldown_days
-        means = [fsum(errors[end - window : end]) / window for end in range(window, len(errors) + 1)]
+        means = [fsum(values[end - window : end]) / window for end in range(window, len(values) + 1)]
         self.threshold = float(np.quantile(means, quantile))
         self.statistic = means[-1]
-        self._errors = deque(errors[-window:], maxlen=window)
+        self._values = deque(values[-window:], maxlen=window)
         self._last_day = dates[-1]
         self._last_alarm = None
 
-    def observe(self, day, daily_mape):
+    def observe(self, day, value):
         """Return True at the close of an eligible day above the calibrated threshold."""
         day = pd.Timestamp(day)
         if day != self._last_day + pd.Timedelta(days=1):
             raise ValueError("Observe each market day once, in chronological order.")
-        if not isfinite(daily_mape) or daily_mape < 0:
-            raise ValueError("Daily MAPE must be finite and nonnegative.")
+        if not isfinite(value) or value < 0:
+            raise ValueError("Daily values must be finite and nonnegative.")
         self._last_day = day
-        self._errors.append(float(daily_mape))
-        self.statistic = fsum(self._errors) / self.window
+        self._values.append(float(value))
+        self.statistic = fsum(self._values) / self.window
         eligible = self._last_alarm is None or (day - self._last_alarm).days >= self.cooldown_days
         if eligible and self.statistic > self.threshold:
             self._last_alarm = day
             return True
         return False
+
+
+class ErrorAlarm(RollingUpperAlarm):
+    """Monitor the deployed model's daily MAPE, using 2014 out-of-sample calibration errors."""
+
+    def __init__(self, calibration_daily_mape, window=28, quantile=0.95, cooldown_days=365):
+        super().__init__(calibration_daily_mape, window, quantile, cooldown_days)
+
+    def observe(self, day, daily_mape):
+        return super().observe(day, daily_mape)
 
 
 def read_alarm_dates(path):

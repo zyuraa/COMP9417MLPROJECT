@@ -17,7 +17,7 @@ LABELS = {
 }
 
 
-def plot_comparison(monthly, days, events, output_path):
+def plot_comparison(monthly, days, events, output_path, labels=LABELS):
     import matplotlib
     matplotlib.use("Agg")
     import matplotlib.dates as mdates
@@ -28,6 +28,10 @@ def plot_comparison(monthly, days, events, output_path):
         "scheduled": ("#226b9e", "-"),
         "triggered": ("#ac4d22", "-"),
     }
+    markers = {"scheduled": "o", "triggered": "D"}
+    if "input_triggered" in labels:
+        styles["input_triggered"] = ("#007568", "-.")
+        markers["input_triggered"] = "^"
     fig, (scores, counts) = plt.subplots(
         2, 1, sharex=True, figsize=(11, 6.8), layout="constrained",
         gridspec_kw={"height_ratios": [3, 1]},
@@ -36,19 +40,20 @@ def plot_comparison(monthly, days, events, output_path):
         subset = monthly.loc[monthly["strategy"] == key]
         month_start = pd.to_datetime(subset["month"], format="%Y-%m")
         scores.plot(month_start, subset["mape_pct"], color=color, linestyle=line,
-                    linewidth=1.5, label=LABELS[key])
+                    linewidth=1.5, label=labels[key])
         scores.fill_between(month_start, subset["mape_day_bootstrap_low_pct"],
                             subset["mape_day_bootstrap_high_pct"], color=color, alpha=0.13)
     scores.set_title("Monthly NSW demand error with 95% whole-day bootstrap intervals", loc="left")
     scores.set_ylabel("Demand MAPE (%)")
     scores.legend(loc="best", ncol=3, frameon=False)
 
-    for key, marker in [("scheduled", "o"), ("triggered", "D")]:
+    for key, marker in markers.items():
         active_dates = events.loc[events["strategy"] == key, "effective_date"].sort_values()
         color, _ = styles[key]
         accumulated = np.cumsum(days.isin(active_dates))
+        line_style = {"scheduled": "--", "triggered": "-", "input_triggered": "-."}[key]
         counts.step(days, accumulated, where="post", color=color, linewidth=1.5,
-                    linestyle="--" if key == "scheduled" else "-", label=LABELS[key])
+                    linestyle=line_style, label=labels[key])
         counts.scatter(active_dates, np.arange(1, len(active_dates) + 1), marker=marker,
                        color=color, s=30, zorder=3)
     counts.set_title("Retrains by the first forecast made with each new fit", loc="left")
@@ -73,19 +78,24 @@ def write_results(output_dir, market_days, observed, forecasts, retraining_log, 
     actual = np.asarray(observed, dtype=float)
     if actual.shape != (len(days), 48) or not np.isfinite(actual).all() or np.any(actual <= 0):
         raise ValueError("Each market day must contain 48 finite, positive NSW demand observations.")
-    if set(forecasts) != set(LABELS):
-        raise ValueError(f"Expected demand forecasts for {', '.join(LABELS)}.")
+    labels = dict(LABELS)
+    adaptive = {"scheduled", "triggered"}
+    if "input_triggered" in forecasts:
+        labels.update(triggered="Error-triggered Lasso", input_triggered="Input-triggered Lasso")
+        adaptive.add("input_triggered")
+    if set(forecasts) != set(labels):
+        raise ValueError(f"Expected demand forecasts for {', '.join(labels)}.")
 
     events = pd.DataFrame(retraining_log).reindex(columns=["strategy", "effective_date"]).copy()
     events["effective_date"] = pd.to_datetime(events["effective_date"])
-    if (not events["strategy"].isin(["scheduled", "triggered"]).all()
+    if (not events["strategy"].isin(adaptive).all()
             or not events["effective_date"].isin(days).all()
             or events.duplicated().any() or (events.groupby("strategy").size() > 6).any()):
         raise ValueError("Expected up to six distinct effective dates within the simulation per strategy.")
 
     overall_rows, yearly_rows, monthly_rows = [], [], []
     years, months = days.year, days.to_period("M")
-    for key, label in LABELS.items():
+    for key, label in labels.items():
         pred = np.asarray(forecasts[key], dtype=float)
         if pred.shape != actual.shape or not np.isfinite(pred).all():
             raise ValueError(f"{label} must provide a finite prediction for every observed half-hour.")
@@ -119,5 +129,5 @@ def write_results(output_dir, market_days, observed, forecasts, retraining_log, 
     pd.DataFrame(yearly_rows).to_csv(output_dir / "yearly.csv", index=False)
     monthly.to_csv(output_dir / "monthly.csv", index=False)
     if plots:
-        plot_comparison(monthly, days, events, output_dir / "demand_adaptation.png")
+        plot_comparison(monthly, days, events, output_dir / "demand_adaptation.png", labels)
     return overall
