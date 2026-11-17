@@ -1,0 +1,22 @@
+{
+  "name": "logreg_every2y_expanding",
+  "created": "2026-11-17 17:07, code 9f91686-dirty",
+  "model": "logistic regression",
+  "params": {
+    "C": 1.0,
+    "class_weight": "balanced"
+  },
+  "n_features": 47,
+  "strategy": {
+    "every_years": 2,
+    "alarms": null,
+    "window_years": null,
+    "retrains": [
+      "2017-01-01",
+      "2019-01-01",
+      "2021-01-01",
+      "2023-01-01",
+      "2025-01-01"
+    ]
+  }
+}
