@@ -6,20 +6,23 @@ from math import fsum, isfinite
 import numpy as np
 import pandas as pd
 
-
+# Signal when a trailing daily mean exceeds its fixed 2014 reference quantile
 class RollingUpperAlarm:
-    """Signal when a trailing daily mean exceeds its fixed 2014 reference quantile."""
 
     def __init__(self, calibration, window=28, quantile=0.95, cooldown_days=365):
         if window < 1 or not 0 < quantile < 1 or cooldown_days < 1:
             raise ValueError("Expected a positive window and cooldown and a quantile between 0 and 1.")
         dates = pd.DatetimeIndex(calibration.index)
+        
         if len(dates) < window or dates.tz is not None or not (dates.year == 2014).all():
             raise ValueError("Use a chronological 2014 series of daily values to calibrate the alarm.")
+        
         expected = pd.date_range(dates[0].normalize(), periods=len(dates), freq="D")
+        
         if not (dates == expected).all():
             raise ValueError("Calibration needs one value per consecutive market day, in date order.")
         values = calibration.to_numpy(dtype=float)
+        
         if not (np.isfinite(values) & (values >= 0)).all():
             raise ValueError("Calibration values must be finite and nonnegative.")
 
@@ -34,16 +37,20 @@ class RollingUpperAlarm:
         self._last_alarm = None
 
     def observe(self, day, value):
-        """Return True at the close of an eligible day above the calibrated threshold."""
+        # Return True at the close of an eligible day above the calibrated threshold
         day = pd.Timestamp(day)
+        
         if day != self._last_day + pd.Timedelta(days=1):
             raise ValueError("Observe each market day once, in chronological order.")
+        
         if not isfinite(value) or value < 0:
             raise ValueError("Daily values must be finite and nonnegative.")
+        
         self._last_day = day
         self._values.append(float(value))
         self.statistic = fsum(self._values) / self.window
         eligible = self._last_alarm is None or (day - self._last_alarm).days >= self.cooldown_days
+        
         if eligible and self.statistic > self.threshold:
             self._last_alarm = day
             return True
@@ -51,7 +58,7 @@ class RollingUpperAlarm:
 
 
 class ErrorAlarm(RollingUpperAlarm):
-    """Monitor the deployed model's daily MAPE, using 2014 out-of-sample calibration errors."""
+    # Monitor the deployed model's daily MAPE, using 2014 out-of-sample calibration errors
 
     def __init__(self, calibration_daily_mape, window=28, quantile=0.95, cooldown_days=365):
         super().__init__(calibration_daily_mape, window, quantile, cooldown_days)
@@ -61,11 +68,11 @@ class ErrorAlarm(RollingUpperAlarm):
 
 
 def read_alarm_dates(path):
-    """Read an external detector's dates (ISO YYYY-MM-DD) at which it signalled.
+    # Read an external detector's dates (ISO YYYY-MM-DD) at which it signalled.
 
-    These are observation dates. Any resulting refit applies to the following
-    market day. A CSV with just the alarm_date header means no signals.
-    """
+    # These are observation dates. Any resulting refit applies to the following
+    # market day. A CSV with just the alarm_date header means no signals.
+    
     frame = pd.read_csv(path, dtype=str)
     if "alarm_date" not in frame:
         raise ValueError("External alarm CSV must contain an alarm_date column.")

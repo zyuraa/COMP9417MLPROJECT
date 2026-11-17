@@ -1,4 +1,4 @@
-"""Score the frozen Stage 1 demand model on the January 2015–October 2026 simulation."""
+#Score the frozen Stage 1 demand model on the January 2015–October 2026 simulation
 
 import argparse
 from pathlib import Path
@@ -106,8 +106,10 @@ def plot_results(monthly, index, actual, forecasts, output_dir):
     ax.plot(index[week], actual[week], color="#27323c", linewidth=1.8, label="Observed demand")
     ax.plot(index[week], forecasts[boost_name][week], color=teal, linewidth=1.5, label=boost_name)
     ax.set_title("NSW demand over seven market days, 1–7 July 2026")
+    
     ax.set_ylabel("Demand (MW)")
     ax.set_xlabel("Half-hour ending (AEST)")
+    
     ax.xaxis.set_major_locator(mdates.DayLocator())
     ax.xaxis.set_major_formatter(mdates.DateFormatter("%d %b"))
     ax.grid(axis="y", alpha=0.2)
@@ -118,17 +120,21 @@ def plot_results(monthly, index, actual, forecasts, output_dir):
 
 def evaluate(csv_path, artifact_dir, output_dir, plots=False):
     data = pd.read_csv(csv_path, parse_dates=["timestamp"], index_col="timestamp").sort_index()
+    
     # Keep earlier rows during feature construction so the first forecast of
     # January 2015 can use its December 2014 history.
     expected_index = pd.date_range("2015-01-01 00:30", "2026-11-01 00:00", freq="30min")
+    
     features = make_features(data).loc[expected_index[0]:expected_index[-1]]
     if not features.index.equals(expected_index):
         raise ValueError("Stage 2 needs all 48 end-stamped intervals of every market day.")
+    
     actual = data.loc[features.index, "nsw_demand"].to_numpy(dtype=float)
     days = market_day(features.index[::SLOTS_PER_DAY])
     months = days.to_period("M")
 
     frozen = load_demand_model(artifact_dir)
+    
     # The same fitted estimator is used in every batch. Batching limits the
     # estimator's temporary memory when predicting the entire simulation.
     batch_size = 31 * SLOTS_PER_DAY
@@ -136,6 +142,7 @@ def evaluate(csv_path, artifact_dir, output_dir, plots=False):
         frozen.predict(features.iloc[start:start + batch_size])
         for start in range(0, len(features), batch_size)
     ])
+    
     forecasts = {
         "Frozen gradient boosting": boosted,
         "Same half-hour yesterday": features["demand_lag1"].to_numpy(),
@@ -143,13 +150,16 @@ def evaluate(csv_path, artifact_dir, output_dir, plots=False):
     }
 
     monthly_rows, yearly_rows, overall_rows = [], [], []
+    
     for name, prediction in forecasts.items():
         if prediction.shape != actual.shape or not np.isfinite(prediction).all():
             raise ValueError(f"{name} must return one finite demand forecast per half-hour.")
+    
         absolute_errors = np.abs(actual - prediction)
         percentage_errors = (100 * absolute_errors / np.abs(actual)).reshape(-1, SLOTS_PER_DAY)
         absolute_errors = absolute_errors.reshape(-1, SLOTS_PER_DAY)
         overall_rows.append({"model": name, **period_metrics(absolute_errors, percentage_errors)})
+    
         for year in days.year.unique():
             mask = days.year == year
             yearly_rows.append({
@@ -157,6 +167,7 @@ def evaluate(csv_path, artifact_dir, output_dir, plots=False):
                 "year": year,
                 **period_metrics(absolute_errors[mask], percentage_errors[mask]),
             })
+    
         # Reuse the same resampled days across methods for each month.
         rng = np.random.default_rng(SEED)
         for month in months.unique():
@@ -175,6 +186,7 @@ def evaluate(csv_path, artifact_dir, output_dir, plots=False):
     pd.DataFrame(yearly_rows).to_csv(output_dir / "stage2_frozen_yearly.csv", index=False)
     monthly = pd.DataFrame(monthly_rows)
     monthly.to_csv(output_dir / "stage2_frozen_monthly.csv", index=False)
+    
     if plots:
         plot_results(monthly, features.index, actual, forecasts, output_dir)
     print("Frozen demand forecasts, January 2015 through October 2026")

@@ -1,4 +1,4 @@
-"""Rebuild the selected demand model from the released CSV and locked settings."""
+# Rebuild the selected demand model from the released CSV and locked settings
 
 import argparse
 import json

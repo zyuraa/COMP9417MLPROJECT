@@ -1,4 +1,4 @@
-"""Frozen NSW demand forecaster for the course's one-day runner."""
+# Frozen NSW demand forecaster for the course's one-day runner
 
 from dataclasses import dataclass
 from pathlib import Path
@@ -14,9 +14,8 @@ if __package__:
 else:
     from features import forecast_features
 
-
+# Baseline in MW to which the fitted model's prediction is added.
 def demand_offset(features, target):
-    """Baseline in MW to which the fitted model's prediction is added."""
     if target == "demand":
         return 0.0
     return features[target].to_numpy()

@@ -1,5 +1,3 @@
-"""Day-ahead NSW demand predictors shared by training and live forecasts."""
-
 import holidays
 import numpy as np
 import pandas as pd
@@ -29,14 +27,12 @@ FEATURE_GROUPS = {
     ],
 }
 
-
+# Return each half-hour's market date using the start of its interval
 def market_day(index):
-    """Return each half-hour's market date using the start of its interval."""
     return (pd.DatetimeIndex(index) - HALF_HOUR).normalize()
 
-
+# Build one forecast row per input timestamp using only day ahead information
 def make_features(df):
-    """Build one forecast row per input timestamp using only day-ahead information."""
     index = df.index
     interval_start = index - HALF_HOUR
     slot = interval_start.hour * 2 + interval_start.minute // 30
@@ -47,6 +43,7 @@ def make_features(df):
     lags = [demand.reindex(index - lag * ONE_DAY).to_numpy(dtype=float) for lag in range(1, 8)]
 
     daily = demand.groupby(days).agg(["mean", "max", "count"])
+    
     # A day summary represents all 48 observations of the previous market day.
     previous = daily.loc[daily["count"] == SLOTS_PER_DAY].reindex(days - ONE_DAY)
     unique_days = days.unique()
@@ -98,21 +95,24 @@ def make_features(df):
     X["forecast_day_max_temp"] = df["syd_temp"].groupby(days).transform("max")
     return X
 
-
+# Build a single 48-slot forecast from seven observed days and supplied weather
 def forecast_features(history, weather_next):
-    """Build a single 48-slot forecast from seven observed days and supplied weather."""
     target = weather_next.index
+    
     if len(target) != SLOTS_PER_DAY:
         raise ValueError("Expected 48 half-hourly weather observations")
     first = market_day(target)[0] + HALF_HOUR
     expected = pd.date_range(first, periods=SLOTS_PER_DAY, freq=HALF_HOUR)
+    
     if not target.equals(expected):
         raise ValueError("Weather rows must cover one complete market day in order")
 
     recent = history.iloc[-7 * SLOTS_PER_DAY:]
     expected_history = pd.date_range(first - 7 * ONE_DAY, periods=7 * SLOTS_PER_DAY, freq=HALF_HOUR)
+    
     if not recent.index.equals(expected_history):
         raise ValueError("Expected seven complete market days immediately before the forecast")
+    
     # Restrict the target block to weather even if the caller supplies additional columns.
     combined = pd.concat([recent[["nsw_demand", *WEATHER]], weather_next[WEATHER]])
     return make_features(combined).loc[target]

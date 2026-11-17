@@ -1,5 +1,3 @@
-"""Select the demand model on 2014, then refit the winner through 2014."""
-
 import argparse
 from pathlib import Path
 
@@ -24,11 +22,13 @@ def metrics(observed, predicted):
 
 def fit_model(features, demand, group, target, settings):
     leaves, iterations = settings
+    
     estimator = HistGradientBoostingRegressor(
         learning_rate=0.08, max_leaf_nodes=leaves, max_iter=iterations,
         min_samples_leaf=40, l2_regularization=1.0, max_bins=128,
         early_stopping=False, random_state=SEED,
     )
+    
     with threadpool_limits(limits=2, user_api="openmp"):
         estimator.fit(features[FEATURE_GROUPS[group]], demand - demand_offset(features, target))
     return DemandModel(estimator, target)

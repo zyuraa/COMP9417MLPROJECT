@@ -8,11 +8,11 @@ from zipfile import ZIP_DEFLATED, ZipFile
 from .lasso import BRYAN_DIR
 from .package_train import save_artifacts
 
-
 def export_demand(output, data, model, settings):
     here = Path(__file__).resolve().parent
     locked = {key: data.config[key] for key in
               ("selected_model_type", "alpha", "l1_ratio", "selected_features")}
+    
     with TemporaryDirectory(dir=output) as temp:
         stage = Path(temp)
         save_artifacts(data, model, settings, stage / "artifacts")
