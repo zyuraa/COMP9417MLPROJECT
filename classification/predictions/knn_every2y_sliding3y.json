@@ -1,0 +1,22 @@
+{
+  "name": "knn_every2y_sliding3y",
+  "created": "2026-11-17 17:03, code d9b6347",
+  "model": "kNN",
+  "params": {
+    "k": 50,
+    "weights": "distance"
+  },
+  "n_features": 47,
+  "strategy": {
+    "every_years": 2,
+    "alarms": null,
+    "window_years": 3,
+    "retrains": [
+      "2017-01-01",
+      "2019-01-01",
+      "2021-01-01",
+      "2023-01-01",
+      "2025-01-01"
+    ]
+  }
+}

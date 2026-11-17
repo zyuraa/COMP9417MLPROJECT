@@ -14,6 +14,9 @@ classification/
   stage1/          model and feature selection on 2014 (concluded, see RESULTS.md)
     tune.py         hyperparameter grid for both models
     importance.py   drop-group refit: what each feature group adds
+  stage2/
+    replay.py       kNN or logreg over 2015-26 under a retraining strategy (every N years, or alarm
+                    dates from a drift detector; expanding or sliding window)
   RESULTS.md       every table and figure, with the command that produced it
   predictions/     one parquet per model (y_true, y_pred, p_up, split) + a json of its settings
   figures/         all figures, named after the script or section that wrote them
