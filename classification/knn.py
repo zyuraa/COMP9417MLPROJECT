@@ -48,5 +48,7 @@ for split, fit_mask, pred_mask in [("val", year <= 2013, year == 2014),
           f"({time.time() - start:.0f}s)")
 
 ev.save_predictions(args.name,
-                   np.concatenate([p[0] for p in parts]), np.concatenate([p[1] for p in parts]),
-                   np.concatenate([p[2] for p in parts]), np.concatenate([p[3] for p in parts]))
+                    np.concatenate([p[0] for p in parts]), np.concatenate([p[1] for p in parts]),
+                    np.concatenate([p[2] for p in parts]), np.concatenate([p[3] for p in parts]),
+                    info={"model": "kNN", "params": {"k": args.k, "weights": args.weights},
+                          "n_features": len(FEATURES)})

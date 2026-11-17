@@ -40,6 +40,18 @@ SHARED_FEATURES = [
     "is_holiday",
 ]
 
+# The shared set split into groups by meaning, for ablations and importance analysis.
+FEATURE_GROUPS = {
+    "price direction (day D)": ["up_lag1", "up_lag7", "up_lag1_lag7"],
+    "price level (day D)": ["price_lag1", "previous_mean_price", "price_relative_mean"],
+    "demand (day D)": ["demand_lag1", "demand_pct_change"],
+    "time of day": ["sin_period", "cos_period"],
+    "calendar": [f"dow_{d}" for d in range(7)] + ["is_holiday", "sin_year", "cos_year"],
+    "weather (D+1)": ["syd_temp", "syd_solar", "syd_rh", "temp_squared"],
+}
+FEATURE_GROUPS["interactions"] = [f for f in SHARED_FEATURES
+                                  if not any(f in g for g in FEATURE_GROUPS.values())]
+
 TARGETS = ["y_up", "y_demand"]
 META = ["day", "year", "period"]
 

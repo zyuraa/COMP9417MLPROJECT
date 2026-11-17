@@ -1,0 +1,10 @@
+{
+  "name": "knn",
+  "created": "2026-11-16 22:32, code 9386f29-dirty",
+  "model": "kNN",
+  "params": {
+    "k": 50,
+    "weights": "distance"
+  },
+  "n_features": 47
+}

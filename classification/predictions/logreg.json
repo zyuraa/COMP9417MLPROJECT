@@ -1,0 +1,10 @@
+{
+  "name": "logreg",
+  "created": "2026-11-16 22:36, code 9386f29-dirty",
+  "model": "logistic regression",
+  "params": {
+    "C": 1.0,
+    "class_weight": "balanced"
+  },
+  "n_features": 47
+}
