@@ -1,0 +1,297 @@
+{
+  "ewma_span_days": 30,
+  "cooldown_days": 365,
+  "max_retrain_budget": 6,
+  "calibration": [
+    {
+      "detector": "Input-Based (PCA Cluster Distance 30d EWMA, 2010\u20132013 Ref)",
+      "monitored_stat": "u_in(D) = min_c ||z_D - mu_c||_2 (5D PCA)",
+      "calibration_period": "2010-01-08 to 2014-12-31",
+      "ref_mean": 0.19639873444942724,
+      "ref_std": 0.024451154725258283,
+      "ref_max": 0.31080749666562435,
+      "threshold": 0.31702364659893684,
+      "mode_a_first_alarm": "2016-10-24",
+      "mode_a_first_effective": "2016-10-25",
+      "mode_a_sustained_onset": "2017-01-22",
+      "mode_a_pct_days_in_alarm": 70.93937991670522,
+      "mode_b_n_alarms_le6": 6
+    },
+    {
+      "detector": "Input-Based (PCA Cluster Distance 30d EWMA, 2010\u20132014 Ref)",
+      "monitored_stat": "u_in(D) = min_c ||z_D - mu_c||_2 (5D PCA)",
+      "calibration_period": "2010-01-08 to 2014-12-31",
+      "ref_mean": 0.19622818887266913,
+      "ref_std": 0.023919956999157534,
+      "ref_max": 0.30804814283492954,
+      "threshold": 0.31420910569162813,
+      "mode_a_first_alarm": "2016-10-24",
+      "mode_a_first_effective": "2016-10-25",
+      "mode_a_sustained_onset": "2017-07-23",
+      "mode_a_pct_days_in_alarm": 70.47663118926422,
+      "mode_b_n_alarms_le6": 6
+    },
+    {
+      "detector": "Weather Covariate Shift Index (8-Var Sydney Weather 30d EWMA)",
+      "monitored_stat": "u_wea(D) = RMS standardized Sydney weather z-score",
+      "calibration_period": "2010-01-08 to 2014-12-31",
+      "ref_mean": 0.9266115660013656,
+      "ref_std": 0.17915330432662,
+      "ref_max": 1.793866843960649,
+      "threshold": 1.829744180839862,
+      "mode_a_first_alarm": "2017-02-06",
+      "mode_a_first_effective": "2017-02-07",
+      "mode_a_sustained_onset": null,
+      "mode_a_pct_days_in_alarm": 0.18509949097639983,
+      "mode_b_n_alarms_le6": NaN
+    },
+    {
+      "detector": "Error-Based (Daily MAPE 30d EWMA, Frozen Stream)",
+      "monitored_stat": "e(D) = daily mean MAPE (%) -> Z_err(D)",
+      "calibration_period": "2014-01-01 to 2014-12-31 (Out-of-Sample Val)",
+      "ref_mean": 1.6725415304997782,
+      "ref_std": 0.3016203150201076,
+      "ref_max": 3.2516470115890566,
+      "threshold": 3.316679951820838,
+      "mode_a_first_alarm": "2017-01-20",
+      "mode_a_first_effective": "2017-01-21",
+      "mode_a_sustained_onset": "2017-01-20",
+      "mode_a_pct_days_in_alarm": 60.920869967607594,
+      "mode_b_n_alarms_le6": 6
+    },
+    {
+      "detector": "Error-Based (Daily MAPE 30d EWMA, Closed-Loop Retrained)",
+      "monitored_stat": "e(D) = daily mean MAPE (%) of active model",
+      "calibration_period": "2014-01-01 to 2014-12-31 (Out-of-Sample Val)",
+      "ref_mean": 1.6725415304997782,
+      "ref_std": 0.3016203150201076,
+      "ref_max": 3.2516470115890566,
+      "threshold": 3.316679951820838,
+      "mode_a_first_alarm": "2017-01-20",
+      "mode_a_first_effective": "2017-01-21",
+      "mode_a_sustained_onset": "2017-01-20",
+      "mode_a_pct_days_in_alarm": 60.920869967607594,
+      "mode_b_n_alarms_le6": 6
+    },
+    {
+      "detector": "Error-Based Companion (Page-Hinkley Test on Daily MAPE)",
+      "monitored_stat": "M_PH(D) = max(0, M_PH(D-1) + e(D) - mu_2014 - delta)",
+      "calibration_period": "2014-01-01 to 2014-12-31 (Out-of-Sample Val)",
+      "ref_mean": 1.7407953561661098,
+      "ref_std": 0.9572723677752112,
+      "ref_max": 22.868678150534922,
+      "threshold": 28.585847688168652,
+      "mode_a_first_alarm": "2016-01-15",
+      "mode_a_first_effective": "2016-01-16",
+      "mode_a_sustained_onset": "2016-01-15",
+      "mode_a_pct_days_in_alarm": 83.82693197593707,
+      "mode_b_n_alarms_le6": NaN
+    }
+  ],
+  "mode_b_input_alarms": [
+    {
+      "alarm_num": 1,
+      "alarm_date": "2016-10-24",
+      "effective_date": "2016-10-25",
+      "statistic_value": 0.3190710065130649,
+      "threshold_at_alarm": 0.31702364659893684,
+      "exceedance_ratio": 1.0064580668858376
+    },
+    {
+      "alarm_num": 2,
+      "alarm_date": "2018-01-07",
+      "effective_date": "2018-01-08",
+      "statistic_value": 0.33722117594946854,
+      "threshold_at_alarm": 0.33412016582035226,
+      "exceedance_ratio": 1.0092811223216729
+    },
+    {
+      "alarm_num": 3,
+      "alarm_date": "2019-08-13",
+      "effective_date": "2019-08-14",
+      "statistic_value": 0.4493926568586077,
+      "threshold_at_alarm": 0.44264979038071384,
+      "exceedance_ratio": 1.0152329598351204
+    },
+    {
+      "alarm_num": 4,
+      "alarm_date": "2020-08-20",
+      "effective_date": "2020-08-21",
+      "statistic_value": 0.47087397743610554,
+      "threshold_at_alarm": 0.46887163196843584,
+      "exceedance_ratio": 1.004270562199004
+    },
+    {
+      "alarm_num": 5,
+      "alarm_date": "2021-08-20",
+      "effective_date": "2021-08-21",
+      "statistic_value": 0.6961691458629833,
+      "threshold_at_alarm": 0.5545838620599425,
+      "exceedance_ratio": 1.2553000429495684
+    },
+    {
+      "alarm_num": 6,
+      "alarm_date": "2022-09-11",
+      "effective_date": "2022-09-12",
+      "statistic_value": 0.7179290782207348,
+      "threshold_at_alarm": 0.710092528780243,
+      "exceedance_ratio": 1.0110359553478938
+    }
+  ],
+  "mode_b_error_frozen_stream_alarms": [
+    {
+      "alarm_num": 1,
+      "alarm_date": "2017-01-20",
+      "effective_date": "2017-01-21",
+      "statistic_value": 3.5182945667568015,
+      "threshold_at_alarm": 3.316679951820838,
+      "exceedance_ratio": 1.0607880826201752
+    },
+    {
+      "alarm_num": 2,
+      "alarm_date": "2018-12-26",
+      "effective_date": "2018-12-27",
+      "statistic_value": 3.6022908525773296,
+      "threshold_at_alarm": 3.5886604580919377,
+      "exceedance_ratio": 1.003798184488214
+    },
+    {
+      "alarm_num": 3,
+      "alarm_date": "2019-12-26",
+      "effective_date": "2019-12-27",
+      "statistic_value": 4.2175326828619335,
+      "threshold_at_alarm": 4.13356639388602,
+      "exceedance_ratio": 1.0203132793754344
+    },
+    {
+      "alarm_num": 4,
+      "alarm_date": "2020-12-25",
+      "effective_date": "2020-12-26",
+      "statistic_value": 5.052460907969008,
+      "threshold_at_alarm": 4.965751082709641,
+      "exceedance_ratio": 1.0174615730460763
+    },
+    {
+      "alarm_num": 5,
+      "alarm_date": "2021-12-30",
+      "effective_date": "2021-12-31",
+      "statistic_value": 6.642217534853553,
+      "threshold_at_alarm": 6.361173377600594,
+      "exceedance_ratio": 1.0441811817679094
+    },
+    {
+      "alarm_num": 6,
+      "alarm_date": "2023-09-14",
+      "effective_date": "2023-09-15",
+      "statistic_value": 9.148779975625516,
+      "threshold_at_alarm": 9.037040620642935,
+      "exceedance_ratio": 1.0123645958531313
+    }
+  ],
+  "mode_b_error_closed_loop_alarms": [
+    {
+      "alarm_num": 1,
+      "alarm_date": "2017-01-20",
+      "effective_date": "2017-01-21",
+      "statistic_value": 3.5182945667568015,
+      "threshold_at_alarm": 3.316679951820838,
+      "exceedance_ratio": 1.0607880826201752
+    },
+    {
+      "alarm_num": 2,
+      "alarm_date": "2019-12-30",
+      "effective_date": "2019-12-31",
+      "statistic_value": 3.920748940963844,
+      "threshold_at_alarm": 3.7713958295250767,
+      "exceedance_ratio": 1.0396015475940044
+    },
+    {
+      "alarm_num": 3,
+      "alarm_date": "2021-09-01",
+      "effective_date": "2021-09-02",
+      "statistic_value": 4.436504157638651,
+      "threshold_at_alarm": 4.345916507238726,
+      "exceedance_ratio": 1.0208443144844221
+    },
+    {
+      "alarm_num": 4,
+      "alarm_date": "2022-11-18",
+      "effective_date": "2022-11-19",
+      "statistic_value": 4.775355455935676,
+      "threshold_at_alarm": 4.692275515395819,
+      "exceedance_ratio": 1.0177056825131567
+    },
+    {
+      "alarm_num": 5,
+      "alarm_date": "2023-12-31",
+      "effective_date": "2024-01-01",
+      "statistic_value": 5.358963534181854,
+      "threshold_at_alarm": 5.206143864979545,
+      "exceedance_ratio": 1.0293537161410942
+    },
+    {
+      "alarm_num": 6,
+      "alarm_date": "2025-10-13",
+      "effective_date": "2025-10-14",
+      "statistic_value": 7.195816600385649,
+      "threshold_at_alarm": 6.933548359666581,
+      "exceedance_ratio": 1.0378259769910483
+    }
+  ],
+  "correlations_and_metrics": {
+    "daily_corr_u_in_vs_mape_2015_2026": 0.8561403340426607,
+    "daily_corr_u_wea_vs_mape_2015_2026": 0.0008308108219827446,
+    "ewma_corr_z_in_vs_z_err_2015_2026": 0.9466244876708283,
+    "ewma_corr_z_wea_vs_z_err_2015_2026": 0.035305855497857266,
+    "yearly_corr_pca_dist_vs_mape": 0.9941834007006928,
+    "yearly_corr_cluster1_share_vs_mape": -0.8898341514848482,
+    "weather_p90_ref_2010_2014": 1.3286309645981178,
+    "shape_p90_ref_2010_2014": 0.289009180383676,
+    "closed_loop_overall_mape_2015_2026": 3.115178106158628,
+    "closed_loop_overall_mae_2015_2026": 231.65247559215018,
+    "frozen_overall_mape_2015_2026": 5.161852619722327,
+    "frozen_overall_mae_2015_2026": 357.4571362323568
+  },
+  "regime_2x2_summary": [
+    {
+      "regime": "Low Weather Shift + Low Shape Shift",
+      "regime_short": "1. Normal Both\n(In-Dist)",
+      "n_days": 1064,
+      "pct_of_sim_days": 24.618232299861177,
+      "mean_daily_mape": 2.2968966082138054,
+      "median_daily_mape": 2.000783462971118,
+      "mean_midday_mape": 3.328082540711148,
+      "mean_signed_bias_mw": 8.611704669022796
+    },
+    {
+      "regime": "High Weather Shift + Low Shape Shift",
+      "regime_short": "2. Weather Shift\nOnly",
+      "n_days": 121,
+      "pct_of_sim_days": 2.799629801018047,
+      "mean_daily_mape": 2.804020462886282,
+      "median_daily_mape": 2.5903431564632826,
+      "mean_midday_mape": 4.2054311290838005,
+      "mean_signed_bias_mw": -18.447199305391035
+    },
+    {
+      "regime": "Low Weather Shift + High Shape Shift",
+      "regime_short": "3. Shape Shift\nOnly (Solar/Duck)",
+      "n_days": 2454,
+      "pct_of_sim_days": 56.77926885701064,
+      "mean_daily_mape": 6.353239539982123,
+      "median_daily_mape": 4.9589096302895666,
+      "mean_midday_mape": 13.732095088489276,
+      "mean_signed_bias_mw": 220.72492401305533
+    },
+    {
+      "regime": "High Weather Shift + High Shape Shift",
+      "regime_short": "4. Both Shifts\nCombined",
+      "n_days": 683,
+      "pct_of_sim_days": 15.802869042110135,
+      "mean_daily_mape": 5.762068410212353,
+      "median_daily_mape": 4.413801804715057,
+      "mean_midday_mape": 10.994671227592528,
+      "mean_signed_bias_mw": 134.82736471703507
+    }
+  ]
+}

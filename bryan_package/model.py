@@ -79,7 +79,12 @@ class PerSlotLinearRegressor:
             return X_3d[:, :, self.selected_indices]
         return X_3d
 
-    def fit(self, X_3d: np.ndarray, Y_2d: np.ndarray) -> "PerSlotLinearRegressor":
+    def fit(
+        self,
+        X_3d: np.ndarray,
+        Y_2d: np.ndarray,
+        sample_weight: Optional[np.ndarray] = None,
+    ) -> "PerSlotLinearRegressor":
         """Fit 48 slot-specific StandardScalers and regularised linear models."""
         X_sub = self._subset_tensor(X_3d)
         self.scalers_ = []
@@ -87,9 +92,9 @@ class PerSlotLinearRegressor:
 
         for t in range(N_PERIODS):
             scaler = StandardScaler()
-            xt_scaled = scaler.fit_transform(X_sub[:, t, :])
+            xt_scaled = scaler.fit_transform(X_sub[:, t, :], sample_weight=sample_weight)
             estimator = self._make_estimator()
-            estimator.fit(xt_scaled, Y_2d[:, t])
+            estimator.fit(xt_scaled, Y_2d[:, t], sample_weight=sample_weight)
             self.scalers_.append(scaler)
             self.models_.append(estimator)
         return self

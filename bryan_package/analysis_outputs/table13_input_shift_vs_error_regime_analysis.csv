@@ -1,0 +1,9 @@
+regime,regime_short,n_days,pct_of_sim_days,mean_daily_mape,median_daily_mape,mean_midday_mape,mean_signed_bias_mw
+Low Weather Shift + Low Shape Shift,"1. Normal Both
+(In-Dist)",1064,24.618232299861177,2.2968966082138054,2.000783462971118,3.328082540711148,8.611704669022796
+High Weather Shift + Low Shape Shift,"2. Weather Shift
+Only",121,2.799629801018047,2.804020462886282,2.5903431564632826,4.2054311290838005,-18.447199305391035
+Low Weather Shift + High Shape Shift,"3. Shape Shift
+Only (Solar/Duck)",2454,56.77926885701064,6.353239539982123,4.9589096302895666,13.732095088489276,220.72492401305533
+High Weather Shift + High Shape Shift,"4. Both Shifts
+Combined",683,15.802869042110135,5.762068410212353,4.413801804715057,10.994671227592528,134.82736471703507

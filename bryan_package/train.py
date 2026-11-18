@@ -416,28 +416,49 @@ def main():
     print(summary_df.to_string(index=False))
 
     print(
-        f"\n[5/5] Optimal model on 2014: {best_overall['model_family']} "
+        f"\n[5/5] Optimal Stage 1 model on 2014: {best_overall['model_family']} "
         f"(alpha={best_overall['alpha']}, l1_ratio={best_overall['l1_ratio']}) "
         f"with MAPE={best_overall['val_mape']:.4f}%, MAE={best_overall['val_mae']:.2f} MW."
     )
-    print("      Refitting Day-Type transformer and selected model on full 2010-2014 data...")
+    print("      Fitting Stage 3 Final Model on Last 4Y (1460d) up to 2026-10-31 with Exponential Recency (H=365d)...")
 
-    # Refit DayTypeTransformer and feature tensor on full 2010-2014 (Stage 1 frozen model)
-    refit_bundle = build_candidate_features(
-        df_stage1,
-        day_type_transformer=None,
-        fit_day_type_max_year=2014,
+    STAGE3_WINDOW_DAYS = 1460          # Hybrid: Last 4 years of operational days
+    STAGE3_HALFLIFE_DAYS = 365.0       # Exponential decay half-life = 1 year
+    STAGE3_DAYTYPE_WINDOW_DAYS = 1095  # Trailing 3 years for Day-Type PCA+KMeans
+
+    df_stage3 = df.loc[days <= pd.Timestamp("2026-10-31")].copy()
+    days_s3 = market_day(df_stage3.index)
+    counts_s3 = pd.Series(1, index=df_stage3.index).groupby(days_s3).sum()
+    valid_days_s3 = pd.DatetimeIndex(sorted(counts_s3[counts_s3 == N_PERIODS].index))
+    df_s3_clean = df_stage3.loc[days_s3.isin(valid_days_s3)]
+    nsw_dem_s3 = df_s3_clean["nsw_demand"].to_numpy(dtype=np.float64).reshape(len(valid_days_s3), N_PERIODS)
+
+    stage3_dt = DayTypeTransformer(n_components=5, n_clusters=4, random_state=42)
+    dt_start_idx = max(0, len(valid_days_s3) - STAGE3_DAYTYPE_WINDOW_DAYS)
+    stage3_dt.fit(nsw_dem_s3[dt_start_idx:])
+
+    stage3_bundle = build_candidate_features(
+        df_s3_clean,
+        day_type_transformer=stage3_dt,
         include_flat_daily=False,
     )
+    X_s3 = stage3_bundle["X_3d"][-STAGE3_WINDOW_DAYS:]
+    Y_s3 = stage3_bundle["Y_2d"][-STAGE3_WINDOW_DAYS:]
+    stage3_dates = stage3_bundle["target_dates"][-STAGE3_WINDOW_DAYS:]
+    d_end = stage3_dates[-1]
+    ages_days = (d_end - stage3_dates).days.to_numpy(dtype=np.float64)
+    raw_weights = np.power(2.0, -ages_days / STAGE3_HALFLIFE_DAYS)
+    sample_weight = raw_weights / np.mean(raw_weights)
+
     final_model = PerSlotLinearRegressor(
         model_type=best_overall["model_type"],
         alpha=best_overall["alpha"],
         l1_ratio=best_overall["l1_ratio"],
         selected_indices=selector.selected_indices_,
         selected_feature_names=selector.selected_feature_names_,
-        day_type_transformer=refit_bundle["day_type_transformer"],
+        day_type_transformer=stage3_dt,
     )
-    final_model.fit(refit_bundle["X_3d"], refit_bundle["Y_2d"])
+    final_model.fit(X_s3, Y_s3, sample_weight=sample_weight)
 
     artifact_dir = os.path.join(HERE, "artifacts")
     os.makedirs(artifact_dir, exist_ok=True)
@@ -447,7 +468,13 @@ def main():
         "window_days": WINDOW_DAYS,
         "stage1_train_years": "2010-2013",
         "stage1_val_year": "2014",
-        "refit_years": "2010-2014",
+        "stage3_train_start": str(stage3_dates[0].date()),
+        "stage3_train_end": str(d_end.date()),
+        "stage3_n_train_days": int(len(stage3_dates)),
+        "stage3_adaptation_strategy": "Hybrid: Last 4Y (1460d) + Exponential Recency Weighting (H=365d) + 3Y DayType Clustering",
+        "stage3_window_days": STAGE3_WINDOW_DAYS,
+        "stage3_halflife_days": STAGE3_HALFLIFE_DAYS,
+        "stage3_daytype_window_days": STAGE3_DAYTYPE_WINDOW_DAYS,
         "selected_model_family": best_overall["model_family"],
         "selected_model_type": best_overall["model_type"],
         "alpha": best_overall["alpha"],
@@ -482,7 +509,11 @@ def main():
         pass
 
     elapsed = time.time() - t_start
-    print(f"      Saved refitted 2010-2014 model artifacts to {artifact_dir}/ in {elapsed:.1f}s.")
+    print(
+        f"      Saved Stage 3 final model artifacts ({len(stage3_dates)} days, "
+        f"{stage3_dates[0].date()} to {d_end.date()}, H={STAGE3_HALFLIFE_DAYS:.0f}d) "
+        f"to {artifact_dir}/ in {elapsed:.1f}s."
+    )
 
 
 if __name__ == "__main__":
