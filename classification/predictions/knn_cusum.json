@@ -1,0 +1,29 @@
+{
+  "name": "knn_cusum",
+  "created": "2026-11-18 22:07, code dfe24ee",
+  "model": "knn",
+  "strategy": {
+    "type": "online_error_cusum_post_detection_recalibration",
+    "window_years": null,
+    "validation_days": 365,
+    "alarm_dates": [
+      "2016-03-22",
+      "2017-11-10",
+      "2019-03-19",
+      "2019-12-13",
+      "2021-01-05",
+      "2022-01-19"
+    ],
+    "retrains": [
+      "2016-03-23",
+      "2017-11-11",
+      "2019-03-20",
+      "2019-12-14",
+      "2021-01-06",
+      "2022-01-20"
+    ],
+    "reference": "2014 initially; historical holdout after alarms",
+    "initial_threshold": 12.392453637628387,
+    "final_threshold": 19.14622952037869
+  }
+}
