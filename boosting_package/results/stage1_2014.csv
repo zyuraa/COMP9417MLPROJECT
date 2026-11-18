@@ -1,0 +1,13 @@
+model,step,n_half_hours,mape_pct,mae_mw,selected,features,target,max_leaf_nodes,max_iter
+Yesterday,baseline,17520,4.934955172705048,394.4223738584475,False,,,,
+Last week,baseline,17520,4.9339058465640555,401.2560936073059,False,,,,
+Histogram gradient boosting,features,17520,2.635946513282043,213.86587645078606,False,history,demand_lag1,15.0,150.0
+Histogram gradient boosting,features,17520,2.37786042695485,190.19935459937005,False,weather,demand_lag1,15.0,150.0
+Histogram gradient boosting,features,17520,2.3150585427921375,185.32171839625337,False,recent,demand_lag1,15.0,150.0
+Histogram gradient boosting,features,17520,2.237050904862193,178.74862890541252,False,profile,demand_lag1,15.0,150.0
+Histogram gradient boosting,target,17520,2.37462457614555,190.42377855471594,False,profile,demand,15.0,150.0
+Histogram gradient boosting,target,17520,2.74622923247995,219.52677846414127,False,profile,demand_lag7,15.0,150.0
+Histogram gradient boosting,target,17520,2.5813203836289738,206.99556248362686,False,profile,matched_profile,15.0,150.0
+Histogram gradient boosting,capacity,17520,2.1058070853773225,168.40102133021986,False,profile,demand_lag1,15.0,300.0
+Histogram gradient boosting,capacity,17520,2.107362933607088,168.53081892642768,False,profile,demand_lag1,31.0,150.0
+Histogram gradient boosting,capacity,17520,2.004552937711412,160.60343273046172,True,profile,demand_lag1,31.0,300.0
