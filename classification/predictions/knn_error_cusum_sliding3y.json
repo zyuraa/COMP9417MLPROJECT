@@ -1,0 +1,29 @@
+{
+  "name": "knn_error_cusum_sliding3y",
+  "created": "2026-11-21 17:55, code ef32902-dirty",
+  "model": "knn",
+  "strategy": {
+    "type": "online_error_cusum_post_detection_recalibration",
+    "window_years": 3,
+    "validation_days": 365,
+    "alarm_dates": [
+      "2016-03-21",
+      "2019-12-06",
+      "2020-12-03",
+      "2022-02-05",
+      "2026-06-13",
+      "2026-08-16"
+    ],
+    "retrains": [
+      "2016-03-22",
+      "2019-12-07",
+      "2020-12-04",
+      "2022-02-06",
+      "2026-06-14",
+      "2026-08-17"
+    ],
+    "reference": "2014 initially; historical holdout after alarms",
+    "initial_threshold": 12.392453637628387,
+    "final_threshold": 44.261274188089544
+  }
+}

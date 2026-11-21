@@ -120,7 +120,7 @@ initial_threshold = float(detector.h)
 print(f'Initial CUSUM threshold: {initial_threshold:.4f}', flush=True)
 
 print('Training initial model on data before 2015...', flush=True)
-initial_fit = day < START
+initial_fit = day.dt.year.between(2010, 2013)
 current_model = new_model().fit(X.loc[initial_fit], y.loc[initial_fit])
 
 parts = [(

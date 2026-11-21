@@ -526,8 +526,7 @@ def main():
 INITIAL_TRAIN_START = pd.Timestamp("2010-01-01")
 INITIAL_TRAIN_END = pd.Timestamp("2014-01-01")
 VALIDATION_END = pd.Timestamp("2015-01-01")
-RETRAIN_DATES = [pd.Timestamp(f"{year}-01-01") for year in (2017, 2019, 2021, 2023, 2025)]
-WINDOW_YEARS = 3
+FINAL_KNN_WINDOW_YEARS = 4
 
 
 def make_training_data(df):
@@ -579,22 +578,30 @@ def train_price_model(csv_path):
     else:
         print("Warning: no 2014 validation data available")
 
-    # Sliding-window retraining, matching replay.py --window-years 3.
-    # The initial 2010–2013 model remains unchanged through validation.
-    for i, retrain_date in enumerate(RETRAIN_DATES, start=1):
-        window_start = retrain_date - pd.DateOffset(years=WINDOW_YEARS)
-        fit = (day >= window_start) & (day < retrain_date)
-        if not fit.any():
-            raise ValueError(f"No training data before {retrain_date.date()}")
-        model = new_model()
-        model.fit(X.loc[fit], y.loc[fit])
-        print(f"Retrain {i} ({retrain_date.date()}): {fit.sum():,} rows from {day.loc[fit].min().date()} through {day.loc[fit].max().date()}")
+    # Final submission model: refit on the latest four calendar years of
+    # complete market days in the supplied dataset. No older rows are fitted.
+    counts = day.value_counts()
+    complete_days = pd.DatetimeIndex(counts[counts == N_PERIODS].index).sort_values()
+    if complete_days.empty:
+        raise ValueError("No complete 48-period market days available for KNN training")
+
+    last_day = complete_days.max()
+    window_start = last_day + pd.Timedelta(days=1) - pd.DateOffset(years=FINAL_KNN_WINDOW_YEARS)
+    final_fit = (day >= window_start) & (day <= last_day) & day.isin(complete_days)
+    if final_fit.sum() < 50:
+        raise ValueError("Insufficient observations in final four-year KNN window")
+
+    model = new_model()
+    model.fit(X.loc[final_fit], y.loc[final_fit])
+    first_day = day.loc[final_fit].min()
+    print(f"Final KNN fit: {final_fit.sum():,} rows from {first_day.date()} "
+          f"through {last_day.date()} (4-year window starts {window_start.date()})")
 
     out = Path(__file__).resolve().parent / "artifacts"
     out.mkdir(parents=True, exist_ok=True)
     path = out / "price_model.joblib"
     joblib.dump(model, path)
-    print(f"Saved final January 2025 KNN model (2022–2024 window): {path} ({path.stat().st_size / 1e6:.1f} MB)")
+    print(f"Saved latest-four-year KNN model: {path} ({path.stat().st_size / 1e6:.1f} MB)")
 
 
 if __name__ == "__main__":
