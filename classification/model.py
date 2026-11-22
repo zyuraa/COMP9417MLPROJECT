@@ -1,4 +1,4 @@
-"""COMP9417 KNN price-direction inference; demand integration placeholder."""
+"""COMP9417 KNN price-direction inference with demand integration placeholder."""
 from pathlib import Path
 import joblib
 import numpy as np

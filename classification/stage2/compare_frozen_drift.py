@@ -1,5 +1,5 @@
 """Plot frozen KNN drift signals and monthly balanced accuracy.
-Run: python classification/stage2/compare_frozen_drift.py --predictions YOUR_FROZEN_KNN_NAME
+Run: python classification/stage2/compare_frozen_drift.py --predictions {model name}
 """
 import argparse
 from pathlib import Path

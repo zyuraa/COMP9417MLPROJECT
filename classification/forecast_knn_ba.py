@@ -1,12 +1,6 @@
-"""Forecast 7–13 Dec 2026 price-direction balanced accuracy.
+"""
+Forecasts 7–13 Dec 2026 price-direction balanced accuracy.
 
-Place alongside train.py, model.py and artifacts/price_model.joblib.
-Run from the repository root, for example:
-    python submission/forecast_knn_4year.py --csv data/nem_weather_halfhourly_2010_2026.csv
-
-The saved model is checked but NEVER modified. Historical backtests refit fresh
-copies of its exact KNN pipeline on trailing four-year windows. Historical
-features are built with train.make_training_data, matching the training code.
 """
 import argparse
 from pathlib import Path

@@ -1,9 +1,5 @@
 """Build the COMP9417 KNN price artifact with 3-year sliding-window retraining every 2 years.
 
-Initial fit: 2010–2013.
-Validation: 2014 (evaluation only; does not update the model).
-Retraining: January 2017, 2019, 2021, 2023 and 2025, using only the preceding 3 years of data.
-
 Usage: python train.py path/to/nem_weather_halfhourly_2010_2026.csv
 No dependency on replay.py, evaluation.py, or classification/.
 """

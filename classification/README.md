@@ -15,8 +15,15 @@ classification/
     tune.py         hyperparameter grid for both models
     importance.py   drop-group refit: what each feature group adds
   stage2/
-    replay.py       kNN or logreg over 2015-26 under a retraining strategy (every N years, or alarm
-                    dates from a drift detector; expanding or sliding window)
+    replay.py           kNN or logreg over 2015-26 under a retraining strategy (every N years, or alarm
+                        dates from a drift detector; expanding or sliding window)
+    replay_error.py     runs cusum detected retraining of model with variable windowing strategy
+    run_frozen_cusum.py runs error based drift detection on frozen model
+    run_frozen_input.py runs input based drift detection on chosen model 
+
+    compare_frozen_drift.py   runs plotting code for drift detetction on frozen model
+    analyse_drift_regimes.py  analyses drift type distirbution and effects on balanced accuracy
+    
   RESULTS.md       every table and figure, with the command that produced it
   predictions/     one parquet per model (y_true, y_pred, p_up, split) + a json of its settings
   figures/         all figures, named after the script or section that wrote them
