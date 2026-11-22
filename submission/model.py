@@ -125,10 +125,6 @@ class PerSlotLinearRegressor:
         preds = np.nan_to_num(preds, nan=7800.0, posinf=DEMAND_MAX, neginf=DEMAND_MIN)
         return np.clip(preds, DEMAND_MIN, DEMAND_MAX)
 
-    def get_coef_matrix(self) -> np.ndarray:
-        """Return (48, n_selected_features) matrix of standardised regression coefficients."""
-        return np.vstack([m.coef_ for m in self.models_])
-
 
 def market_day(index):
     return pd.DatetimeIndex(index - pd.Timedelta(minutes=30)).normalize()
@@ -202,7 +198,6 @@ class Forecaster:
         config_path = os.path.join(artifact_dir, "config.json")
         with open(config_path, "r", encoding="utf-8") as fh:
             self.config = json.load(fh)
-        self.window_days = int(self.config.get("window_days", 7))
         self.demand_model: PerSlotLinearRegressor = joblib.load(
             os.path.join(artifact_dir, "demand_model.joblib")
         )
