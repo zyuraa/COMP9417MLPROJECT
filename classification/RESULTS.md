@@ -164,18 +164,21 @@ cover for each other: removing one lets the model lean on its near-duplicate.
 <!-- END importance -->
 
 <!-- BEGIN adaptation -->
-## Retrained every 2 years
+## KNN Retraining Comparison
 
-`python classification/analysis.py --section adaptation --title "Retrained every 2 years"` (2026-11-17 17:08, code 9f91686-dirty)
+`python classification/analysis.py --section adaptation --title "KNN Retraining Comparison"` (2026-11-21 17:47, code ef32902-dirty)
 
 Models (224,976 shared half-hours, identical labels):
 
 | predictions file | model | params | features | retrains |
 |---|---|---|---|---|
 | knn | kNN | k=50, weights=distance | 47 | none (frozen) |
+| knn_cusum | knn |  |  | 2016-03-23, 2017-11-11, 2019-03-20, 2019-12-14, 2021-01-06, 2022-01-20 |
+| knn_error_cusum | knn |  |  | 2016-03-22, 2019-12-07, 2020-12-04, 2022-02-06, 2026-06-14, 2026-08-17 |
 | knn_every2y_expanding | kNN | k=50, weights=distance | 47 | 2017-01-01, 2019-01-01, 2021-01-01, 2023-01-01, 2025-01-01 |
 | knn_every2y_sliding3y | kNN | k=50, weights=distance | 47 | 2017-01-01, 2019-01-01, 2021-01-01, 2023-01-01, 2025-01-01 |
 | logreg | logistic regression | C=1.0, class_weight=balanced | 47 | none (frozen) |
+| logreg_cusum | logreg |  |  | 2015-10-04, 2016-03-22, 2016-06-09, 2019-12-13, 2021-01-01, 2022-02-05 |
 | logreg_every2y_expanding | logistic regression | C=1.0, class_weight=balanced | 47 | 2017-01-01, 2019-01-01, 2021-01-01, 2023-01-01, 2025-01-01 |
 | logreg_every2y_sliding3y | logistic regression | C=1.0, class_weight=balanced | 47 | 2017-01-01, 2019-01-01, 2021-01-01, 2023-01-01, 2025-01-01 |
 
@@ -184,9 +187,12 @@ Models (224,976 shared half-hours, identical labels):
 | 2014 | Acc % | BalAcc % |
 |---|---|---|
 | knn | 79.18 | 79.17 |
+| knn_cusum | 79.18 | 79.17 |
+| knn_error_cusum | 79.18 | 79.17 |
 | knn_every2y_expanding | 79.18 | 79.17 |
 | knn_every2y_sliding3y | 79.18 | 79.17 |
 | logreg | 79.09 | 79.16 |
+| logreg_cusum | 79.09 | 79.16 |
 | logreg_every2y_expanding | 79.09 | 79.16 |
 | logreg_every2y_sliding3y | 79.09 | 79.16 |
 | baseline: yesterday | 73.9 | 73.99 |
@@ -194,20 +200,20 @@ Models (224,976 shared half-hours, identical labels):
 
 **2015-26 replay**: balanced accuracy % by year. Models without a strategy are frozen (fitted on 2010-14); retrained ones list their dates in the models table.
 
-| year | knn | knn_every2y_expanding | knn_every2y_sliding3y | logreg | logreg_every2y_expanding | logreg_every2y_sliding3y | baseline: yesterday | baseline: last week | class-1 share |
-|---|---|---|---|---|---|---|---|---|---|
-| 2015 | 78.66 | 78.66 | 78.66 | 78.55 | 78.55 | 78.55 | 74.72 | 72.06 | 0.457 |
-| 2016 | 74.55 | 74.55 | 74.55 | 74.51 | 74.51 | 74.51 | 69.83 | 67.56 | 0.396 |
-| 2017 | 74.39 | 74.35 | 73.67 | 73.55 | 74.04 | 73.75 | 68.71 | 68.3 | 0.421 |
-| 2018 | 76.82 | 77.41 | 77.37 | 76.4 | 76.74 | 76.83 | 72.26 | 69.1 | 0.404 |
-| 2019 | 75.1 | 76.44 | 76.15 | 75.26 | 75.85 | 76.26 | 71.53 | 69.1 | 0.404 |
-| 2020 | 73.2 | 73.77 | 73.97 | 74.84 | 74.71 | 74.0 | 72.26 | 69.94 | 0.387 |
-| 2021 | 71.56 | 73.28 | 73.71 | 72.61 | 73.65 | 74.97 | 72.85 | 69.26 | 0.413 |
-| 2022 | 69.06 | 71.24 | 72.3 | 70.08 | 71.53 | 70.65 | 70.82 | 67.41 | 0.482 |
-| 2023 | 70.75 | 75.32 | 76.63 | 75.23 | 76.92 | 78.65 | 76.0 | 73.31 | 0.459 |
-| 2024 | 71.03 | 76.78 | 78.96 | 75.13 | 77.58 | 79.29 | 76.39 | 72.48 | 0.433 |
-| 2025 | 71.23 | 78.85 | 80.84 | 77.53 | 78.83 | 81.06 | 79.42 | 75.4 | 0.464 |
-| 2026 | 67.29 | 73.58 | 74.98 | 72.49 | 73.62 | 76.33 | 73.87 | 70.2 | 0.519 |
+| year | knn | knn_cusum | knn_error_cusum | knn_every2y_expanding | knn_every2y_sliding3y | logreg | logreg_cusum | logreg_every2y_expanding | logreg_every2y_sliding3y | baseline: yesterday | baseline: last week | class-1 share |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| 2015 | 78.02 | 78.66 | 78.02 | 78.66 | 78.66 | 78.55 | 78.52 | 78.55 | 78.55 | 74.72 | 72.06 | 0.457 |
+| 2016 | 74.2 | 74.69 | 73.73 | 74.55 | 74.55 | 74.51 | 74.76 | 74.51 | 74.51 | 69.83 | 67.56 | 0.396 |
+| 2017 | 73.68 | 74.33 | 73.43 | 74.35 | 73.67 | 73.55 | 73.98 | 74.04 | 73.75 | 68.71 | 68.3 | 0.421 |
+| 2018 | 76.25 | 77.56 | 76.84 | 77.41 | 77.37 | 76.4 | 76.72 | 76.74 | 76.83 | 72.26 | 69.1 | 0.404 |
+| 2019 | 74.55 | 76.33 | 75.23 | 76.44 | 76.15 | 75.26 | 75.73 | 75.85 | 76.26 | 71.53 | 69.1 | 0.404 |
+| 2020 | 73.72 | 74.31 | 75.23 | 73.77 | 73.97 | 74.84 | 74.78 | 74.71 | 74.0 | 72.26 | 69.94 | 0.387 |
+| 2021 | 72.1 | 73.31 | 73.31 | 73.28 | 73.71 | 72.61 | 73.65 | 73.65 | 74.97 | 72.85 | 69.26 | 0.413 |
+| 2022 | 69.19 | 71.94 | 73.29 | 71.24 | 72.3 | 70.08 | 71.66 | 71.53 | 70.65 | 70.82 | 67.41 | 0.482 |
+| 2023 | 71.6 | 74.39 | 76.47 | 75.32 | 76.63 | 75.23 | 76.6 | 76.92 | 78.65 | 76.0 | 73.31 | 0.459 |
+| 2024 | 71.75 | 75.88 | 77.89 | 76.78 | 78.96 | 75.13 | 76.84 | 77.58 | 79.29 | 76.39 | 72.48 | 0.433 |
+| 2025 | 71.9 | 75.97 | 78.05 | 78.85 | 80.84 | 77.53 | 77.27 | 78.83 | 81.06 | 79.42 | 75.4 | 0.464 |
+| 2026 | 68.16 | 72.08 | 73.52 | 73.58 | 74.98 | 72.49 | 72.54 | 73.62 | 76.33 | 73.87 | 70.2 | 0.519 |
 
 ![yearly balanced accuracy](figures/adaptation_yearly_bal_acc.png)
 

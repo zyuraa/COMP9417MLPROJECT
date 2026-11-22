@@ -107,7 +107,7 @@ def main():
 
         result["stage"] = "import"
         sys.path.insert(0, args.package)
-        import submission.model as model  # the group's model.py
+        import model  # the group's model.py
 
         result["stage"] = "init"
         t0 = time.time()

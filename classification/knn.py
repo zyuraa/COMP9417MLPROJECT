@@ -39,7 +39,7 @@ t = F.build_table(F.load(ev.DATA))
 X, y, year = t[FEATURES], t["y_up"].astype(int), t["year"]
 parts = []
 for split, fit_mask, pred_mask in [("val", year <= 2013, year == 2014),
-                                   ("frozen", year <= 2014, year >= 2015)]:
+                                   ("frozen", year <= 2013, year >= 2015)]:
     start = time.time()
     m = model().fit(X[fit_mask], y[fit_mask])
     p = m.predict_proba(X[pred_mask])[:, 1]
