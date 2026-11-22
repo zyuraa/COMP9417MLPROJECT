@@ -213,3 +213,32 @@ Models (224,976 shared half-hours, identical labels):
 
 ![monthly accuracy with 95% CI](figures/adaptation_monthly_accuracy_ci.png)
 <!-- END adaptation -->
+
+<!-- BEGIN frozen_ci_knn -->
+## Frozen monthly accuracy with 95% CIs: knn
+
+`python classification/stage2/frozen_ci.py --name knn` (2026-11-21 12:59, code 3bfcea2)
+
+Monthly accuracy (%) of `knn` over the frozen replay, with 95% CIs computed both ways
+(Appendix A). Mean CI width: **4.49 pp** treating half-hours as independent,
+**9.16 pp** with the day-block bootstrap (**2.0x** wider),
+because errors within a day are correlated. The model is below the yesterday baseline in
+66 of 142 months.
+
+![frozen monthly accuracy with both CIs](figures/frozen_ci_knn.png)
+
+| year | mean monthly accuracy % |
+|---|---|
+| 2015 | 78.86 |
+| 2016 | 75.44 |
+| 2017 | 74.91 |
+| 2018 | 77.23 |
+| 2019 | 75.59 |
+| 2020 | 74.13 |
+| 2021 | 72.2 |
+| 2022 | 69.15 |
+| 2023 | 70.81 |
+| 2024 | 71.12 |
+| 2025 | 71.16 |
+| 2026 | 67.37 |
+<!-- END frozen_ci_knn -->
